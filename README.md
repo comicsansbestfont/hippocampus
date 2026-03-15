@@ -1,5 +1,7 @@
 # Hippocampus
 
+![Hippocampus — Your agents forget between sessions. This fixes that.](docs/gallery/01-hero.png)
+
 **Your agents forget between sessions. This fixes that.**
 
 Every time an OpenClaw agent starts a new session, it wakes up blank. No memory of yesterday's conversations, open threads, or promises made. You've seen it: the same questions re-asked, context re-explained, commitments quietly dropped.
