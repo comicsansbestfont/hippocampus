@@ -7,7 +7,7 @@ Every time an OpenClaw agent starts a new session, it wakes up blank. No memory 
 Hippocampus gives your agents a rolling briefing that's automatically injected into every session. No tool calls, no manual loading — your agent just *knows*.
 
 ```bash
-openclaw plugins install hippocampus
+openclaw plugins install @sacheeperera/hippocampus
 ```
 
 ---
@@ -49,7 +49,7 @@ The synthesis is the key part. It doesn't dump raw logs — it *synthesizes*. Th
 ### 1. Install
 
 ```bash
-openclaw plugins install hippocampus
+openclaw plugins install @sacheeperera/hippocampus
 ```
 
 Zero config required for single-agent setups. The plugin activates immediately:
