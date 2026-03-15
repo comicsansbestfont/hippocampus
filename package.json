@@ -1,0 +1,55 @@
+{
+  "name": "hippocampus",
+  "version": "0.1.0",
+  "description": "Your agents forget between sessions. Hippocampus gives them a rolling briefing — synthesized daily, injected automatically.",
+  "type": "module",
+  "main": "index.ts",
+  "license": "MIT",
+  "author": "Sachee Perera <howdy@sachee.com.au>",
+  "keywords": [
+    "openclaw",
+    "openclaw-plugin",
+    "memory",
+    "hippocampus",
+    "agent-memory",
+    "context-management",
+    "working-memory",
+    "rolling-context"
+  ],
+  "files": [
+    "index.ts",
+    "src/**/*.ts",
+    "skills/**",
+    "openclaw.plugin.json",
+    "docs/DEVELOPMENT.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "vitest run --dir test",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "openclaw": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "openclaw": {
+    "extensions": [
+      "./index.ts"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comicsansbestfont/hippocampus.git"
+  },
+  "homepage": "https://github.com/comicsansbestfont/hippocampus#readme",
+  "bugs": {
+    "url": "https://github.com/comicsansbestfont/hippocampus/issues"
+  }
+}

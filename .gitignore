@@ -1,0 +1,13 @@
+node_modules/
+dist/
+*.tgz
+.DS_Store
+
+# Dev/test OpenClaw instance (created by openclaw --dev)
+.openclaw-dev/
+
+# Internal docs (not published)
+docs/TESTING.md
+docs/PRODUCT-HUNT-LAUNCH.md
+docs/LANDING-PAGE-BRIEF.md
+docs/GALLERY-IMAGE-PROMPTS.md

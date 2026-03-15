@@ -1,0 +1,125 @@
+{
+  "id": "hippocampus",
+  "name": "Hippocampus",
+  "description": "Three-layer working memory: daily notes, rolling synthesis, permanent knowledge graduation.",
+  "skills": ["./skills"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "enabled": {
+        "type": "boolean"
+      },
+      "rollingWindowDays": {
+        "type": "integer",
+        "minimum": 3,
+        "maximum": 90
+      },
+      "targetSizeChars": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "min": { "type": "integer" },
+          "max": { "type": "integer" }
+        }
+      },
+      "contextInjection": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "enabled": { "type": "boolean" },
+          "priority": { "type": "integer" },
+          "excludeAgents": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "synthesis": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "outputSections": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "domainFraming": {
+            "type": "string"
+          }
+        }
+      },
+      "agents": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "rollingWindowDays": { "type": "integer", "minimum": 3, "maximum": 90 },
+            "targetSizeChars": {
+              "type": "object",
+              "properties": {
+                "min": { "type": "integer" },
+                "max": { "type": "integer" }
+              }
+            },
+            "domainFraming": { "type": "string" },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string" },
+                  "path": { "type": "string" },
+                  "label": { "type": "string" },
+                  "windowed": { "type": "boolean" }
+                },
+                "required": ["id", "path"]
+              }
+            },
+            "outputSections": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "synthesisPrompt": { "type": "string" }
+          }
+        }
+      },
+      "graduation": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "enabled": { "type": "boolean" },
+          "persistenceDaysThreshold": {
+            "type": "integer",
+            "minimum": 7,
+            "maximum": 60
+          },
+          "autoSuggest": { "type": "boolean" }
+        }
+      }
+    }
+  },
+  "uiHints": {
+    "rollingWindowDays": {
+      "label": "Rolling Window (days)",
+      "help": "Number of days the synthesis considers (default: 14)"
+    },
+    "targetSizeChars.min": {
+      "label": "Min Target Size (chars)",
+      "help": "Minimum characters for HIPPOCAMPUS.md (default: 3000)"
+    },
+    "targetSizeChars.max": {
+      "label": "Max Target Size (chars)",
+      "help": "Maximum characters for HIPPOCAMPUS.md (default: 5000)"
+    },
+    "contextInjection.enabled": {
+      "label": "Inject into Context",
+      "help": "Load HIPPOCAMPUS.md into every session automatically"
+    },
+    "contextInjection.priority": {
+      "label": "Injection Priority",
+      "help": "Higher = earlier in context. Default: 50"
+    }
+  }
+}
