@@ -1,5 +1,7 @@
 # Hippocampus
 
+[![View on GitHub](https://img.shields.io/badge/GitHub-comicsansbestfont%2Fhippocampus-blue?logo=github)](https://github.com/comicsansbestfont/hippocampus)
+
 ![Hippocampus — Your agents forget between sessions. This fixes that.](docs/gallery/01-hero.png)
 
 **Your agents forget between sessions. This fixes that.**
