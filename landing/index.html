@@ -1,0 +1,2240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hippocampus | Agent memory plugin for OpenClaw</title>
+<meta name="description" content="Your AI agents forget between sessions. Hippocampus synthesizes a rolling briefing from daily notes and injects it automatically. Free, open source.">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+<meta property="og:title" content="Hippocampus | Agent memory plugin for OpenClaw">
+<meta property="og:description" content="Your AI agents forget between sessions. Hippocampus synthesizes a rolling briefing from daily notes and injects it automatically. Free, open source.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://hippocampus.lovabo.com/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Hippocampus | Agent memory plugin for OpenClaw">
+<meta name="twitter:description" content="Your AI agents forget between sessions. Hippocampus synthesizes a rolling briefing from daily notes and injects it automatically.">
+<meta name="twitter:image" content="https://hippocampus.lovabo.com/og-image.png">
+<link rel="canonical" href="https://hippocampus.lovabo.com">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.lovabo.com.au/#organization",
+      "name": "Lovabo",
+      "url": "https://www.lovabo.com.au",
+      "sameAs": [
+        "https://github.com/lovabo"
+      ]
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://hippocampus.lovabo.com/#webpage",
+      "url": "https://hippocampus.lovabo.com",
+      "name": "Hippocampus | Agent memory plugin for OpenClaw",
+      "description": "Your AI agents forget between sessions. Hippocampus synthesizes a rolling briefing from daily notes and injects it automatically. One command to install. Free, open source.",
+      "publisher": {
+        "@id": "https://www.lovabo.com.au/#organization"
+      },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Hippocampus",
+      "description": "Open-source OpenClaw plugin that synthesizes a rolling briefing from your agent's daily notes and injects it into every session automatically.",
+      "url": "https://hippocampus.lovabo.com",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@id": "https://www.lovabo.com.au/#organization"
+      },
+      "license": "https://opensource.org/licenses/MIT",
+      "downloadUrl": "https://github.com/comicsansbestfont/hippocampus",
+      "softwareVersion": "1.0",
+      "isAccessibleForFree": true
+    },
+    {
+      "@type": "HowTo",
+      "name": "How Hippocampus works",
+      "description": "Three layers, one install. Set up working memory for your OpenClaw agents.",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Daily Notes",
+          "text": "Your agents already write memory/YYYY-MM-DD.md files. Hippocampus reads these. No changes needed."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Rolling Synthesis",
+          "text": "A daily cron job reads the last 14 days and synthesizes HIPPOCAMPUS.md, a concise ops briefing loaded into every session."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Permanent Memory",
+          "text": "When a pattern persists across synthesis cycles, promote it to MEMORY.md. The important stuff graduates. The noise doesn't."
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is Hippocampus?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Hippocampus is a free, open-source OpenClaw plugin that gives your AI agents working memory between sessions. It reads daily notes, synthesizes a rolling 14-day briefing, and injects it into every new session automatically. Your agents wake up knowing what happened yesterday instead of starting blank."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How is this different from just using MEMORY.md?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "MEMORY.md is permanent storage: facts that never change. But what about last week's open threads? Yesterday's commitments? The thing someone asked you to follow up on? That's what the rolling synthesis handles. HIPPOCAMPUS.md is a 14-day briefing that stays current. MEMORY.md is forever. You need both."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it work with a single agent?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Install, add a cron job, done. No multi-agent config required. The defaults work."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How big is the HIPPOCAMPUS.md file?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Default target: 3,000-5,000 characters. Roughly one page. Big enough to be useful, small enough to leave room in the context window."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I customize what gets synthesized?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Add custom sources (any file or directory in your workspace), custom output sections, and domain framing per agent. Or use the defaults. They work for most setups."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the synthesis deterministic?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. It's an LLM skill. The model reads your sources and writes a briefing following structured instructions. The output varies slightly between runs, but the sections and content sources are consistent."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Will this bloat my context window?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The HIPPOCAMPUS.md is injected via prependSystemContext, which benefits from provider prompt caching (stays static between turns). At 3-5k characters, it's a small fraction of a typical context window."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geist:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #060810;
+  --bg-elevated: #0c0f1a;
+  --bg-surface: #111528;
+  --border: rgba(255, 255, 255, 0.06);
+  --border-hover: rgba(255, 255, 255, 0.12);
+  --text: #f0f0f0;
+  --text-secondary: #8a8f9e;
+  --text-muted: #7a8099;
+  --accent: #08ccff;
+  --accent-dim: rgba(8, 204, 255, 0.15);
+  --accent-glow: rgba(8, 204, 255, 0.06);
+  --green: #34d399;
+  --green-dim: rgba(52, 211, 153, 0.12);
+  --red: #f87171;
+  --red-dim: rgba(248, 113, 113, 0.1);
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body: 'Geist', -apple-system, sans-serif;
+  --font-mono: 'DM Mono', 'SF Mono', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--bg);
+  background-image: linear-gradient(180deg, rgba(8, 204, 255, 0.06) 0%, transparent 20%, transparent 80%, rgba(8, 204, 255, 0.04) 100%);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 300;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+/* ── Cursor ── */
+.cursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 20px; height: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 100;
+  transition: transform 0.15s ease-out, border-color 0.3s ease, width 0.3s ease, height 0.3s ease;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: difference;
+}
+.cursor-dot {
+  position: fixed;
+  top: 0; left: 0;
+  width: 4px; height: 4px;
+  background: #fff;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 101;
+  transform: translate(-50%, -50%);
+}
+.cursor.hovering {
+  transform: translate(-50%, -50%) scale(2.5);
+  border-color: var(--accent);
+}
+
+/* ── Grain Overlay (SVG turbulence) ── */
+.grain {
+  position: fixed;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+  animation: grain 0.8s steps(1) infinite;
+}
+
+/* ── Film Grain (pixel noise canvas — sachee.com.au style) ── */
+.film-grain {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 80;
+  pointer-events: none;
+  opacity: 0.03;
+  mix-blend-mode: screen;
+}
+
+/* ── Star Field ── */
+#starfield {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -15%); }
+  40% { transform: translate(-5%, 15%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%, 0%); }
+  70% { transform: translate(0%, 10%); }
+  80% { transform: translate(3%, 15%); }
+  90% { transform: translate(-10%, 10%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ── Scroll Progress ── */
+.scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 1px;
+  background: var(--accent);
+  z-index: 95;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* ── Reveal Animations ── */
+/* Default: visible for crawlers + no-JS. JS adds .js-reveal to hide before animating */
+.reveal {
+  opacity: 1;
+  transform: translateY(0);
+}
+.js-reveal .reveal {
+  opacity: 0;
+  transform: translateY(40px);
+}
+.js-reveal .reveal.visible {
+  animation: revealUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.reveal-delay-1 { animation-delay: 0.1s !important; }
+.reveal-delay-2 { animation-delay: 0.2s !important; }
+.reveal-delay-3 { animation-delay: 0.3s !important; }
+.reveal-delay-4 { animation-delay: 0.4s !important; }
+.reveal-delay-5 { animation-delay: 0.5s !important; }
+
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes revealLine {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* ── Section Layout ── */
+section {
+  position: relative;
+}
+
+.section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.section-narrow {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ── Horizontal Rule ── */
+.hr {
+  height: 1px;
+  background: var(--border);
+  border: none;
+  margin: 0;
+}
+
+/* ── Typography ── */
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.display-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.label-center {
+  text-align: center;
+}
+
+.body-text {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+}
+
+.gradient-text {
+  background: linear-gradient(180deg, #ffffff 20%, #666666 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.accent-text {
+  color: var(--accent);
+}
+
+.code-inline {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 0.15em 0.5em;
+  border-radius: 4px;
+}
+
+/* Link underline effect */
+a.link-hover {
+  color: var(--text-secondary);
+  text-decoration: none;
+  position: relative;
+  transition: color 0.4s ease;
+  cursor: pointer;
+}
+a.link-hover::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+a.link-hover:hover { color: var(--text); }
+a.link-hover:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+
+/* ═══════════════════════════════════════════════════
+   HERO
+   ═══════════════════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Atmospheric background */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -40%; left: 50%;
+  transform: translateX(-50%);
+  width: 140%;
+  height: 80%;
+  background: none;
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1.25rem;
+  border-radius: 100px;
+  margin-bottom: 3rem;
+}
+
+.hero-badge .dot {
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--green);
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 7vw, 5.5rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  max-width: 900px;
+  margin-bottom: 2rem;
+}
+
+.hero h1 .line-2 {
+  display: block;
+  margin-top: 0.1em;
+}
+
+.hero h1 .line-2 .display-italic {
+  color: var(--accent);
+  -webkit-text-fill-color: var(--accent);
+}
+
+.hero-sub {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  color: var(--text-secondary);
+  max-width: 580px;
+  line-height: 1.7;
+  margin-bottom: 3.5rem;
+}
+
+/* Install command — the CTA */
+.install-block {
+  position: relative;
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 520px;
+}
+
+.install-block-inner {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+
+.install-block-inner:hover {
+  border-color: var(--border-hover);
+}
+
+/* Glow effect behind the install block */
+.install-block::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 13px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(8, 204, 255, 0.2), transparent 50%, rgba(8, 204, 255, 0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.install-block:hover::before {
+  opacity: 1;
+}
+
+.install-prompt {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.install-cmd {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--accent);
+  flex-grow: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.install-cmd .typed-text {
+  border-right: 2px solid var(--accent);
+  padding-right: 2px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+
+.copy-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 12px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color 0.2s ease, transform 0.2s ease;
+  position: relative;
+}
+.copy-btn:hover {
+  color: var(--text);
+  transform: scale(1.1);
+}
+.copy-btn svg { width: 18px; height: 18px; display: block; }
+.copy-btn .check { display: none; }
+.copy-btn.copied .clipboard { display: none; }
+.copy-btn.copied .check { display: block; color: var(--green); }
+
+.hero-secondary {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 0.5rem;
+}
+
+.hero-secondary a {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+.hero-secondary a:hover { color: var(--text); }
+.hero-secondary a svg { width: 16px; height: 16px; }
+
+/* Scroll indicator */
+.scroll-hint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+.scroll-hint span {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.scroll-hint .arrow {
+  width: 1px; height: 24px;
+  background: linear-gradient(to bottom, var(--text-muted), transparent);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(8px); }
+}
+
+
+/* ═══════════════════════════════════════════════════
+   PROBLEM SECTION
+   ═══════════════════════════════════════════════════ */
+.problem {
+  padding: 8rem 2rem 10rem;
+}
+
+.problem h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 2.5rem;
+}
+
+.problem p {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  font-weight: 300;
+  margin-bottom: 1.5rem;
+}
+
+.problem p:last-child {
+  margin-bottom: 0;
+}
+
+.problem p strong {
+  color: var(--text);
+  font-weight: 400;
+}
+
+
+/* ═══════════════════════════════════════════════════
+   THE FIX
+   ═══════════════════════════════════════════════════ */
+.fix {
+  padding: 8rem 2rem 10rem;
+  position: relative;
+}
+
+.fix::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: none;
+  pointer-events: none;
+}
+
+.fix h2 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 2rem;
+}
+
+.fix p {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  font-weight: 300;
+  margin-bottom: 1.5rem;
+}
+
+.fix em {
+  color: var(--text);
+  font-style: normal;
+  font-weight: 400;
+}
+
+
+/* ═══════════════════════════════════════════════════
+   THREE LAYERS — ANIMATED DIAGRAM
+   ═══════════════════════════════════════════════════ */
+.layers {
+  padding: 8rem 2rem 10rem;
+}
+
+.layers h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 3rem;
+}
+
+.layers-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .layers-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+  }
+}
+
+.layer-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  padding: 2.5rem 2rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.4s ease;
+}
+
+@media (min-width: 768px) {
+  .layer-card:first-child { border-radius: 12px 0 0 12px; }
+  .layer-card:last-child { border-radius: 0 12px 12px 0; }
+}
+@media (max-width: 767px) {
+  .layer-card { border-radius: 12px; }
+}
+
+.layer-card:hover {
+  border-color: var(--border-hover);
+}
+
+.layer-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.layer-card:hover::before {
+  transform: scaleX(1);
+}
+
+.layer-number {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1.25rem;
+  display: block;
+}
+
+.layer-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+.layer-card p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+
+/* Flow arrows between cards — desktop only */
+@media (min-width: 768px) {
+  .layer-card:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -8px; top: 50%;
+    width: 14px; height: 14px;
+    border-right: 1.5px solid var(--text-muted);
+    border-bottom: 1.5px solid var(--text-muted);
+    transform: translateY(-50%) rotate(-45deg);
+    z-index: 2;
+    opacity: 0.4;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════
+   BEFORE / AFTER
+   ═══════════════════════════════════════════════════ */
+.contrast {
+  padding: 8rem 2rem 10rem;
+}
+
+.contrast h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.contrast-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .contrast-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+}
+
+.contrast-panel {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2.5rem 2rem;
+  position: relative;
+}
+
+.contrast-panel.panel-without {
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.06), var(--bg-elevated));
+}
+.contrast-panel.panel-with {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.05), var(--bg-elevated));
+}
+
+.panel-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.panel-label .indicator {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.panel-without .indicator { background: var(--red); box-shadow: 0 0 8px var(--red-dim); }
+.panel-with .indicator { background: var(--green); box-shadow: 0 0 8px var(--green-dim); }
+
+.panel-label span {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.panel-without .panel-label span { color: var(--red); }
+.panel-with .panel-label span { color: var(--green); }
+
+.chat-line {
+  margin-bottom: 1.25rem;
+}
+
+.chat-line:last-child { margin-bottom: 0; }
+
+.chat-sender {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.05em;
+}
+
+.chat-msg {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+
+.panel-with .chat-line:last-child .chat-msg {
+  color: var(--green);
+}
+
+
+/* ═══════════════════════════════════════════════════
+   MULTI-AGENT
+   ═══════════════════════════════════════════════════ */
+.multi {
+  padding: 8rem 2rem 10rem;
+  position: relative;
+}
+
+.multi h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 2rem;
+}
+
+.multi .body-text {
+  margin-bottom: 2.5rem;
+}
+
+.code-window {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.code-window-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.code-window-bar .dot-r { width: 10px; height: 10px; border-radius: 50%; background: rgba(248, 113, 113, 0.5); }
+.code-window-bar .dot-y { width: 10px; height: 10px; border-radius: 50%; background: rgba(251, 191, 36, 0.5); }
+.code-window-bar .dot-g { width: 10px; height: 10px; border-radius: 50%; background: rgba(52, 211, 153, 0.5); }
+
+.code-window-bar .filename {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-left: 0.75rem;
+}
+
+.code-window pre {
+  padding: 1.5rem;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  tab-size: 2;
+}
+
+.code-window .key { color: var(--accent); }
+.code-window .string { color: var(--green); }
+.code-window .punct { color: var(--text-muted); }
+
+
+/* ═══════════════════════════════════════════════════
+   SYNTHESIZED TABLE
+   ═══════════════════════════════════════════════════ */
+.synth {
+  padding: 8rem 2rem 10rem;
+}
+
+.synth h2 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 2.5rem;
+}
+
+.synth-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.synth-table th {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 0 0 1rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.synth-table td {
+  padding: 1.25rem 1rem 1.25rem 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.synth-table td:first-child {
+  font-family: var(--font-body);
+  font-weight: 400;
+  color: var(--text);
+  white-space: nowrap;
+  padding-right: 2rem;
+}
+
+.synth-table td:last-child {
+  color: var(--text-secondary);
+  font-weight: 300;
+  font-size: 0.95rem;
+}
+
+.synth-note {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+
+/* ═══════════════════════════════════════════════════
+   COEXISTENCE
+   ═══════════════════════════════════════════════════ */
+.coexist {
+  padding: 8rem 2rem 10rem;
+}
+
+.coexist h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 2.5rem;
+}
+
+.coexist-item {
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.coexist-item:first-of-type {
+  border-top: 1px solid var(--border);
+}
+
+.coexist-item h3 {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+}
+
+.coexist-item p {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+
+
+/* ═══════════════════════════════════════════════════
+   SOCIAL PROOF
+   ═══════════════════════════════════════════════════ */
+.proof {
+  padding: 8rem 2rem 10rem;
+  position: relative;
+}
+
+.proof::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 100%; height: 60%;
+  background: none;
+  pointer-events: none;
+}
+
+.proof h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 2rem;
+}
+
+.proof .body-text {
+  margin-bottom: 1.5rem;
+}
+
+.proof .body-text:last-of-type {
+  margin-bottom: 3.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+}
+
+@media (min-width: 640px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.stat-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  transition: border-color 0.3s ease;
+}
+
+.stat-card:hover { border-color: var(--border-hover); }
+
+@media (min-width: 640px) {
+  .stat-card:first-child { border-radius: 12px 0 0 12px; }
+  .stat-card:last-child { border-radius: 0 12px 12px 0; }
+}
+@media (max-width: 639px) {
+  .stat-card:nth-child(1) { border-radius: 12px 0 0 0; }
+  .stat-card:nth-child(2) { border-radius: 0 12px 0 0; }
+  .stat-card:nth-child(3) { border-radius: 0 0 0 12px; }
+  .stat-card:nth-child(4) { border-radius: 0 0 12px 0; }
+}
+
+.stat-number {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+
+/* ═══════════════════════════════════════════════════
+   FAQ ACCORDION
+   ═══════════════════════════════════════════════════ */
+.faq {
+  padding: 8rem 2rem 10rem;
+}
+
+.faq h2 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  margin-bottom: 2.5rem;
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--border);
+}
+
+.faq-item:first-of-type {
+  border-top: 1px solid var(--border);
+}
+
+.faq-q {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 1.5rem 0.5rem;
+  margin: 0 -0.5rem;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 1rem;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  gap: 1rem;
+  min-height: 48px;
+  transition: color 0.3s ease;
+}
+
+.faq-q:hover { color: var(--accent); }
+
+.faq-q .icon {
+  flex-shrink: 0;
+  width: 20px; height: 20px;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.faq-q .icon::before,
+.faq-q .icon::after {
+  content: '';
+  position: absolute;
+  background: var(--text-muted);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.faq-q .icon::before {
+  top: 50%; left: 0;
+  width: 100%; height: 1px;
+  transform: translateY(-50%);
+}
+
+.faq-q .icon::after {
+  left: 50%; top: 0;
+  width: 1px; height: 100%;
+  transform: translateX(-50%);
+}
+
+.faq-item.open .faq-q .icon::after {
+  transform: translateX(-50%) rotate(90deg);
+  opacity: 0;
+}
+
+.faq-a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), padding 0.4s ease;
+}
+
+.faq-item.open .faq-a {
+  max-height: 500px;
+}
+
+.faq-a-inner {
+  padding: 0 0 1.5rem 0;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+
+
+/* ═══════════════════════════════════════════════════
+   FINAL CTA
+   ═══════════════════════════════════════════════════ */
+.cta-final {
+  padding: 10rem 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.cta-final::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 100%;
+  background: none;
+  pointer-events: none;
+}
+
+.cta-final h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin-bottom: 3rem;
+}
+
+.cta-final .install-block {
+  margin: 0 auto 2rem;
+}
+
+.cta-final .cta-sub {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  font-weight: 300;
+  margin-bottom: 0.75rem;
+}
+
+.cta-final .cta-ask {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 300;
+  margin-bottom: 3rem;
+}
+
+.cta-final .cta-ask em {
+  font-style: italic;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+}
+
+.cta-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  min-height: 44px;
+  background: var(--text);
+  color: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+}
+.btn-primary svg { width: 16px; height: 16px; }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  min-height: 44px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+.btn-secondary:hover {
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+
+
+/* ═══════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════ */
+footer {
+  padding: 3rem 2rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+footer p {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+
+/* ── Product Hunt Badge ── */
+.ph-badge {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.7;
+  transition: opacity 0.3s ease, transform 0.2s ease;
+  min-height: 44px;
+}
+.ph-badge:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+.ph-badge img {
+  display: block;
+  height: 36px;
+  width: auto;
+}
+
+/* ── Focus Visible ── */
+a:focus-visible,
+button:focus-visible,
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ── Active / Press States ── */
+.btn-primary:active { transform: translateY(0) scale(0.98); }
+.btn-secondary:active { transform: scale(0.98); }
+.copy-btn:active { transform: scale(0.9); }
+.faq-q:active { opacity: 0.8; }
+.layer-card:active, .stat-card:active { transform: scale(0.98); }
+
+/* ── Overscroll ── */
+html { overscroll-behavior: contain; }
+
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .hero h1 {
+    font-size: clamp(2.2rem, 9vw, 3.5rem);
+  }
+
+  .hero-secondary {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .install-cmd {
+    font-size: 0.72rem;
+  }
+
+  .section-inner,
+  .section-narrow {
+    padding: 0 1.5rem;
+  }
+
+  .hero {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .layers, .contrast, .multi, .synth, .coexist, .proof, .faq, .cta-final, .problem, .fix {
+    padding-top: 5rem;
+    padding-bottom: 6rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .stat-number {
+    font-size: 2.2rem;
+  }
+
+  .scroll-hint {
+    bottom: 1.25rem;
+  }
+
+  .contrast-panel {
+    padding: 2rem 1.5rem;
+  }
+
+  .layer-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .synth-table td:first-child {
+    white-space: normal;
+    padding-right: 1rem;
+  }
+}
+
+/* Hide custom cursor on touch devices */
+@media (hover: none) {
+  .cursor, .cursor-dot { display: none; }
+  body { cursor: auto; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .js-reveal .reveal { opacity: 1; transform: none; }
+  .grain { animation: none; }
+  .film-grain { display: none; }
+  #starfield { display: none; }
+  .scroll-hint { animation: none; }
+  .install-cmd .typed-text { border-right: none; animation: none; }
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+
+<!-- Grain -->
+<div class="grain"></div>
+
+<!-- Film grain (pixel noise — sachee style) -->
+<div class="film-grain" id="filmGrain"></div>
+
+<!-- Star field -->
+<canvas id="starfield"></canvas>
+
+<!-- Scroll progress -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     HERO
+     ═══════════════════════════════════════════════════ -->
+<section class="hero" aria-label="Hippocampus overview">
+  <div class="hero-badge reveal">
+    <span class="dot"></span>
+    Open source &middot; MIT licensed
+  </div>
+
+  <h1>
+    <span class="reveal reveal-delay-1">Your agents forget</span>
+    <span class="line-2 reveal reveal-delay-2"><span class="display-italic">This fixes that.</span></span>
+  </h1>
+
+  <p class="hero-sub reveal reveal-delay-3">
+    Hippocampus synthesizes a rolling briefing from your agent's daily notes and injects it into every session automatically. One command to install. Zero config.
+  </p>
+
+  <div class="install-block reveal reveal-delay-4">
+    <div class="install-block-inner">
+      <span class="install-prompt">$</span>
+      <span class="install-cmd"><span class="typed-text" id="typedCmd"></span></span>
+      <button class="copy-btn" onclick="copyInstall(this)" aria-label="Copy install command">
+        <svg class="clipboard" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        <svg class="check" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="hero-secondary reveal reveal-delay-5">
+    <a href="https://github.com/lovabo/hippocampus" target="_blank" rel="noopener">
+      <svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      View on GitHub
+    </a>
+    <a href="https://www.producthunt.com/products/hippocampus-3?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-hippocampus-3" target="_blank" rel="noopener noreferrer" class="ph-badge">
+      <img alt="Hippocampus on Product Hunt" width="200" height="43" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1098932&amp;theme=neutral&amp;t=1773590166350" loading="lazy">
+    </a>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="arrow"></div>
+  </div>
+</section>
+
+
+<hr class="hr">
+
+
+<!-- ═══════════════════════════════════════════════════
+     THE PROBLEM
+     ═══════════════════════════════════════════════════ -->
+<section class="problem" aria-label="The problem">
+  <div class="section-narrow">
+    <span class="label reveal">The problem</span>
+    <h2 class="reveal reveal-delay-1">Every session starts<br>from zero</h2>
+    <p class="reveal reveal-delay-2">
+      Your agent finishes a productive session. Threads identified, commitments made, context established. Then the session ends.
+    </p>
+    <p class="reveal reveal-delay-3">
+      Tomorrow, it wakes up <strong>blank</strong>. No memory of what you discussed, what's pending, or what it promised. You re-explain. It re-asks. Commitments <em>quietly</em> disappear.
+    </p>
+    <p class="reveal reveal-delay-4">
+      The more agents you run, the worse it gets. Multiply that amnesia across a team of 5, 10, or 15 agents and you're spending more time re-briefing than working.
+    </p>
+  </div>
+</section>
+
+
+<hr class="hr">
+
+
+<!-- ═══════════════════════════════════════════════════
+     THE FIX
+     ═══════════════════════════════════════════════════ -->
+<section class="fix" aria-label="The fix">
+  <div class="section-narrow">
+    <span class="label reveal">The fix</span>
+    <h2 class="reveal reveal-delay-1">A briefing,<br>not a brain dump</h2>
+    <p class="reveal reveal-delay-2">
+      Hippocampus reads your agent's recent daily notes and synthesizes a rolling briefing: what's top of mind, what threads are open, what commitments are outstanding, what happened in recent sessions.
+    </p>
+    <p class="reveal reveal-delay-3">
+      This briefing is automatically injected into every session. No tool call needed. Your agent just <em>knows</em>.
+    </p>
+  </div>
+</section>
+
+
+<hr class="hr">
+
+
+<!-- ═══════════════════════════════════════════════════
+     HOW IT WORKS — THREE LAYERS
+     ═══════════════════════════════════════════════════ -->
+<section class="layers" aria-label="How it works">
+  <div class="section-inner">
+    <span class="label reveal">How it works</span>
+    <h2 class="reveal reveal-delay-1">Three layers, one install</h2>
+
+    <div class="layers-grid">
+      <div class="layer-card reveal reveal-delay-2">
+        <span class="layer-number">Layer 01</span>
+        <h3>Daily Notes</h3>
+        <p>Your agents already write <code class="code-inline">memory/YYYY-MM-DD.md</code> files. Hippocampus reads these. No changes needed.</p>
+      </div>
+
+      <div class="layer-card reveal reveal-delay-3">
+        <span class="layer-number">Layer 02</span>
+        <h3>Rolling Synthesis</h3>
+        <p>A daily cron job reads the last 14 days and synthesizes <code class="code-inline">HIPPOCAMPUS.md</code>, a concise ops briefing loaded into every session.</p>
+      </div>
+
+      <div class="layer-card reveal reveal-delay-4">
+        <span class="layer-number">Layer 03</span>
+        <h3>Permanent Memory</h3>
+        <p>When a pattern persists across synthesis cycles, promote it to <code class="code-inline">MEMORY.md</code>. The important stuff graduates. The noise doesn't.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<hr class="hr">
+
+
+<!-- ═══════════════════════════════════════════════════
+     BEFORE / AFTER
+     ═══════════════════════════════════════════════════ -->
+<section class="contrast" aria-label="Before and after comparison">
+  <div class="section-inner">
+    <span class="label label-center reveal">The difference</span>
+    <h2 class="reveal reveal-delay-1">Same agent, different experience</h2>
+
+    <div class="contrast-grid">
+      <!-- Without -->
+      <div class="contrast-panel panel-without reveal reveal-delay-2">
+        <div class="panel-label">
+          <span class="indicator"></span>
+          <span>Without Hippocampus</span>
+        </div>
+        <div class="chat-line">
+          <div class="chat-sender">You</div>
+          <div class="chat-msg">"What were we working on yesterday?"</div>
+        </div>
+        <div class="chat-line">
+          <div class="chat-sender">Agent</div>
+          <div class="chat-msg">"I don't have context from previous sessions. Could you remind me?"</div>
+        </div>
+        <div class="chat-line">
+          <div class="chat-sender">You</div>
+          <div class="chat-msg">"We were debugging the auth middleware..."</div>
+        </div>
+      </div>
+
+      <!-- With -->
+      <div class="contrast-panel panel-with reveal reveal-delay-3">
+        <div class="panel-label">
+          <span class="indicator"></span>
+          <span>With Hippocampus</span>
+        </div>
+        <div class="chat-line">
+          <div class="chat-sender">You</div>
+          <div class="chat-msg">"How's the auth middleware going?"</div>
+        </div>
+        <div class="chat-line">
+          <div class="chat-sender">Agent</div>
+          <div class="chat-msg">"Based on yesterday's session, the token refresh bug is narrowed to the middleware chain. You asked me to check the session store next. Want me to continue?"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<hr class="hr">
+
+
+<!-- ═══════════════════════════════════════════════════
+     MULTI-AGENT
+     ═══════════════════════════════════════════════════ -->
+<section class="multi" aria-label="Multi-agent support">
+  <div class="section-narrow">
+    <span class="label reveal">Scale</span>
+    <h2 class="reveal reveal-delay-1">One agent or thirteen.<br>Same install.</h2>
+    <p class="body-text reveal reveal-delay-2">
+      Running a single agent? Install and forget. Zero config required. Running a fleet? Configure each agent's synthesis independently: domain framing, custom sources, tailored output sections.
+    </p>
+
+    <div class="code-window reveal reveal-delay-3">
+      <div class="code-window-bar">
+        <span class="dot-r"></span>
+        <span class="dot-y"></span>
+        <span class="dot-g"></span>
+        <span class="filename">hippocampus.config.json</span>
+      </div>
+      <pre><code><span class="punct">{</span>
+  <span class="key">"agents"</span><span class="punct">: {</span>
+    <span class="key">"cyclawps"</span><span class="punct">: {</span>
+      <span class="punct">"domainFraming":</span> <span class="string">"Platform-centric. Lead with system health."</span><span class="punct">,</span>
+      <span class="punct">"sources":</span> <span class="punct">[{</span> <span class="punct">"id":</span> <span class="string">"health"</span><span class="punct">,</span> <span class="punct">"path":</span> <span class="string">"artifacts/reports/health-check/"</span> <span class="punct">}]</span>
+    <span class="punct">},</span>
+    <span class="key">"bobo"</span><span class="punct">: {</span>
+      <span class="punct">"domainFraming":</span> <span class="string">"Strategy-focused. Lead with pipeline and decisions."</span><span class="punct">,</span>
+      <span class="punct">"sources":</span> <span class="punct">[{</span> <span class="punct">"id":</span> <span class="string">"charter"</span><span class="punct">,</span> <span class="punct">"path":</span> <span class="string">"CHARTER.md"</span> <span class="punct">}]</span>
+    <span class="punct">}</span>
+  <span class="punct">}</span>
+<span class="punct">}</span></code></pre>
+    </div>
+  </div>
+</section>
+
+
+<hr class="hr">
+
+
+<!-- ═══════════════════════════════════════════════════
+     WHAT GETS SYNTHESIZED
+     ═══════════════════════════════════════════════════ -->
+<section class="synth" aria-label="What gets synthesized">
+  <div class="section-narrow">
+    <span class="label reveal">Output</span>
+    <h2 class="reveal reveal-delay-1">Your agent's daily briefing</h2>
+
+    <table class="synth-table reveal reveal-delay-2">
+      <thead>
+        <tr>
+          <th>Section</th>
+          <th>What it captures</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Top of Mind</td>
+          <td>3-5 highest-priority items, rewritten every sync</td>
+        </tr>
+        <tr>
+          <td>Open Threads</td>
+          <td>Active work streams, persists until resolved</td>
+        </tr>
+        <tr>
+          <td>Commitments</td>
+          <td>Who owes what to whom, with staleness flags</td>
+        </tr>
+        <tr>
+          <td>Recent Sessions</td>
+          <td>Rolling conversation log from the last 14 days</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="synth-note reveal reveal-delay-3">
+      Custom sections available per agent. Add <code class="code-inline">cron_health</code> for your platform engineer, <code class="code-inline">pipeline_status</code> for your sales agent, whatever fits the role.
+    </p>
+  </div>
+</section>
+
+
+<hr class="hr">
+
+
+<!-- ═══════════════════════════════════════════════════
+     COEXISTENCE
+     ═══════════════════════════════════════════════════ -->
+<section class="coexist" aria-label="Compatibility">
+  <div class="section-narrow">
+    <span class="label reveal">Compatibility</span>
+    <h2 class="reveal reveal-delay-1">Works with what you have</h2>
+
+    <div class="coexist-item reveal reveal-delay-2">
+      <h3>Using lossless-claw?</h3>
+      <p>Hippocampus is not a context engine. It uses <code class="code-inline">before_prompt_build</code> hooks; lossless-claw respects these during context assembly. No conflicts.</p>
+    </div>
+
+    <div class="coexist-item reveal reveal-delay-3">
+      <h3>Using memory-core?</h3>
+      <p>Hippocampus writes standard markdown files. memory-core indexes them automatically. They complement each other.</p>
+    </div>
+
+    <div class="coexist-item reveal reveal-delay-4">
+      <h3>Using something else?</h3>
+      <p>Hippocampus only reads and writes markdown in agent workspaces. It doesn't touch your config, your sessions, or your other plugins.</p>
+    </div>
+  </div>
+</section>
+
+
+<hr class="hr">
+
+
+<!-- ═══════════════════════════════════════════════════
+     SOCIAL PROOF
+     ═══════════════════════════════════════════════════ -->
+<section class="proof" aria-label="Social proof">
+  <div class="section-inner">
+    <span class="label reveal">Provenance</span>
+    <h2 class="reveal reveal-delay-1">Battle-tested,<br>not theoretical</h2>
+
+    <p class="body-text reveal reveal-delay-2">
+      Built by some dude that talks to 13 agents across a 4 business unit OpenClaw instance in production.
+    </p>
+    <p class="body-text reveal reveal-delay-3">
+      The three-layer memory pattern emerged from running autonomous agents across GTM advisory, e-commerce, content, and platform engineering, where dropped context means dropped revenue.
+    </p>
+
+    <div class="stats-grid">
+      <div class="stat-card reveal reveal-delay-2">
+        <div class="stat-number" data-count="13">13</div>
+        <div class="stat-label">agents running</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-3">
+        <div class="stat-number" data-count="4">4</div>
+        <div class="stat-label">business units</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-4">
+        <div class="stat-number" data-count="47">47</div>
+        <div class="stat-label">tests passing</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-5">
+        <div class="stat-number" data-count="14">14</div>
+        <div class="stat-label">days rolling</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<hr class="hr">
+
+
+<!-- ═══════════════════════════════════════════════════
+     FAQ
+     ═══════════════════════════════════════════════════ -->
+<section class="faq" aria-label="Frequently asked questions">
+  <div class="section-narrow">
+    <span class="label reveal">FAQ</span>
+    <h2 class="reveal reveal-delay-1">Questions</h2>
+
+    <div class="reveal reveal-delay-2">
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-a-0" onclick="toggleFaq(this)">
+          What is Hippocampus?
+          <span class="icon"></span>
+        </button>
+        <div class="faq-a" id="faq-a-0" role="region">
+          <div class="faq-a-inner">Hippocampus is a free, open-source OpenClaw plugin that gives your AI agents working memory between sessions. It reads daily notes, synthesizes a rolling 14-day briefing, and injects it into every new session automatically. Your agents wake up knowing what happened yesterday instead of starting blank.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-a-1" onclick="toggleFaq(this)">
+          How is this different from just using MEMORY.md?
+          <span class="icon"></span>
+        </button>
+        <div class="faq-a" id="faq-a-1" role="region">
+          <div class="faq-a-inner">MEMORY.md is permanent storage: facts that never change. But what about last week's open threads? Yesterday's commitments? The thing someone asked you to follow up on? That's what the rolling synthesis handles. HIPPOCAMPUS.md is a 14-day briefing that stays current. MEMORY.md is forever. You need both.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-a-2" onclick="toggleFaq(this)">
+          Does it work with a single agent?
+          <span class="icon"></span>
+        </button>
+        <div class="faq-a" id="faq-a-2" role="region">
+          <div class="faq-a-inner">Yes. Install, add a cron job, done. No multi-agent config required. The defaults work.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-a-3" onclick="toggleFaq(this)">
+          How big is the HIPPOCAMPUS.md file?
+          <span class="icon"></span>
+        </button>
+        <div class="faq-a" id="faq-a-3" role="region">
+          <div class="faq-a-inner">Default target: 3,000–5,000 characters. Roughly one page. Big enough to be useful, small enough to leave room in the context window.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-a-4" onclick="toggleFaq(this)">
+          Can I customize what gets synthesized?
+          <span class="icon"></span>
+        </button>
+        <div class="faq-a" id="faq-a-4" role="region">
+          <div class="faq-a-inner">Yes. Add custom sources (any file or directory in your workspace), custom output sections, and domain framing per agent. Or use the defaults. They work for most setups.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-a-5" onclick="toggleFaq(this)">
+          Is the synthesis deterministic?
+          <span class="icon"></span>
+        </button>
+        <div class="faq-a" id="faq-a-5" role="region">
+          <div class="faq-a-inner">No. It's an LLM skill. The model reads your sources and writes a briefing following structured instructions. The output varies slightly between runs, but the sections and content sources are consistent.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq-a-6" onclick="toggleFaq(this)">
+          Will this bloat my context window?
+          <span class="icon"></span>
+        </button>
+        <div class="faq-a" id="faq-a-6" role="region">
+          <div class="faq-a-inner">The HIPPOCAMPUS.md is injected via <code class="code-inline">prependSystemContext</code>, which benefits from provider prompt caching (stays static between turns). At 3–5k characters, it's a small fraction of a typical context window.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<hr class="hr">
+
+
+<!-- ═══════════════════════════════════════════════════
+     FINAL CTA
+     ═══════════════════════════════════════════════════ -->
+<section class="cta-final" aria-label="Install Hippocampus">
+  <h2 class="reveal"><span class="gradient-text">One command.</span><br>That's it.</h2>
+
+  <div class="install-block reveal reveal-delay-1">
+    <div class="install-block-inner">
+      <span class="install-prompt">$</span>
+      <span class="install-cmd" style="border-right:none">
+        <span style="border:none;animation:none">openclaw plugins install hippocampus</span>
+      </span>
+      <button class="copy-btn" onclick="copyInstall(this)" aria-label="Copy install command">
+        <svg class="clipboard" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        <svg class="check" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <p class="cta-sub reveal reveal-delay-2">Free. Open source. MIT licensed. No account, no API key, no sign-up.</p>
+  <p class="cta-ask reveal reveal-delay-3">Or ask your agent: <em>"Set up hippocampus for me"</em></p>
+
+  <div class="cta-buttons reveal reveal-delay-4">
+    <a href="https://github.com/lovabo/hippocampus" target="_blank" rel="noopener" class="btn-secondary">
+      <svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      View on GitHub
+    </a>
+    <a href="https://www.producthunt.com/products/hippocampus-3?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-hippocampus-3" target="_blank" rel="noopener noreferrer" class="ph-badge">
+      <img alt="Hippocampus on Product Hunt" width="200" height="43" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1098932&amp;theme=neutral&amp;t=1773590166350" loading="lazy">
+    </a>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════════ -->
+<footer>
+  <p>Hippocampus is open source under the MIT license</p>
+  <p style="margin-top:1rem"><a href="https://www.lovabo.com.au" target="_blank" rel="noopener" class="link-hover">lovabo.com.au</a> &middot; <a href="https://www.sachee.com.au" target="_blank" rel="noopener" class="link-hover">sachee.com.au</a></p>
+</footer>
+
+
+<!-- ═══════════════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════════════ -->
+<script>
+// ── Globals ──
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isTouchDevice = window.matchMedia('(hover: none)').matches;
+
+// ── SEO-safe reveal: add js-reveal class so animations only run with JS ──
+if (!prefersReducedMotion) {
+  document.documentElement.classList.add('js-reveal');
+}
+
+// ── Custom Cursor (skip on touch devices) ──
+if (!isTouchDevice) {
+  const cursor = document.getElementById('cursor');
+  const cursorDot = document.getElementById('cursorDot');
+  let mouseX = 0, mouseY = 0;
+  let cursorX = 0, cursorY = 0;
+
+  document.addEventListener('mousemove', e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursorDot.style.left = mouseX + 'px';
+    cursorDot.style.top = mouseY + 'px';
+  });
+
+  function animateCursor() {
+    if (document.hidden) { requestAnimationFrame(animateCursor); return; }
+    cursorX += (mouseX - cursorX) * 0.15;
+    cursorY += (mouseY - cursorY) * 0.15;
+    cursor.style.left = cursorX + 'px';
+    cursor.style.top = cursorY + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  document.querySelectorAll('a, button, .faq-q, .layer-card, .stat-card').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+  });
+}
+
+
+// ── Scroll Progress ──
+const scrollProgress = document.getElementById('scrollProgress');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+  scrollProgress.style.transform = `scaleX(${progress})`;
+}, { passive: true });
+
+
+// ── Scroll Reveal ──
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+
+// ── Typing Effect for Install Command ──
+const installCmd = 'openclaw plugins install hippocampus';
+const typedEl = document.getElementById('typedCmd');
+let charIndex = 0;
+
+function typeChar() {
+  if (charIndex <= installCmd.length) {
+    typedEl.textContent = installCmd.slice(0, charIndex);
+    charIndex++;
+    setTimeout(typeChar, 40 + Math.random() * 30);
+  }
+}
+
+if (!prefersReducedMotion) {
+  const heroObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      setTimeout(typeChar, 800);
+      heroObserver.disconnect();
+    }
+  }, { threshold: 0.5 });
+  heroObserver.observe(document.querySelector('.hero'));
+} else {
+  typedEl.textContent = installCmd;
+}
+
+
+// ── Copy Install Command ──
+function copyInstall(btn) {
+  navigator.clipboard.writeText('openclaw plugins install hippocampus');
+  btn.classList.add('copied');
+  setTimeout(() => btn.classList.remove('copied'), 2000);
+}
+
+
+// ── FAQ Accordion (with ARIA) ──
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+
+  // Close all and reset aria
+  document.querySelectorAll('.faq-item.open').forEach(el => {
+    el.classList.remove('open');
+    el.querySelector('.faq-q').setAttribute('aria-expanded', 'false');
+  });
+
+  // Toggle current
+  if (!isOpen) {
+    item.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+  }
+}
+
+
+// ── Count-Up Animation ──
+const countObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const target = parseInt(el.dataset.count);
+      if (prefersReducedMotion) { el.textContent = target; countObserver.unobserve(el); return; }
+      const duration = 1200;
+      const start = performance.now();
+
+      function update(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(eased * target);
+        if (progress < 1) requestAnimationFrame(update);
+      }
+
+      el.textContent = '0';
+      requestAnimationFrame(update);
+      countObserver.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.stat-number[data-count]').forEach(el => countObserver.observe(el));
+
+
+// ── Film Grain (pixel noise canvas) ──
+if (!prefersReducedMotion) {
+  (function() {
+    const c = document.createElement('canvas');
+    c.width = 256; c.height = 256;
+    const ctx = c.getContext('2d');
+    const d = ctx.createImageData(256, 256);
+    for (let i = 0; i < d.data.length; i += 4) {
+      const v = Math.random() * 255;
+      d.data[i] = v; d.data[i+1] = v; d.data[i+2] = v; d.data[i+3] = 255;
+    }
+    ctx.putImageData(d, 0, 0);
+    const fg = document.getElementById('filmGrain');
+    fg.style.backgroundImage = 'url(' + c.toDataURL() + ')';
+    fg.style.backgroundSize = '256px 256px';
+  })();
+}
+
+
+// ── Star Field (skip if reduced motion) ──
+if (!prefersReducedMotion) {
+  (function() {
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    let w, h;
+
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      initStars();
+    }
+
+    function initStars() {
+      const count = Math.floor((w * h) / 3500);
+      stars = [];
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: Math.random() * 1.2 + 0.2,
+          baseAlpha: Math.random() * 0.6 + 0.1,
+          twinkleSpeed: Math.random() * 0.02 + 0.005,
+          twinkleOffset: Math.random() * Math.PI * 2,
+        });
+      }
+    }
+
+    let frame = 0;
+    function draw() {
+      if (document.hidden) { requestAnimationFrame(draw); return; }
+      ctx.clearRect(0, 0, w, h);
+      frame++;
+      for (const s of stars) {
+        const twinkle = Math.sin(frame * s.twinkleSpeed + s.twinkleOffset);
+        const alpha = s.baseAlpha + twinkle * 0.15;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.02, alpha)})`;
+        ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    draw();
+
+    let scrollY = 0;
+    window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
+
+    function parallax() {
+      if (document.hidden) { requestAnimationFrame(parallax); return; }
+      canvas.style.transform = `translateY(${scrollY * 0.05}px)`;
+      requestAnimationFrame(parallax);
+    }
+    parallax();
+  })();
+}
+</script>
+
+<!-- PostHog (deferred to avoid render-blocking) -->
+<script>
+  window.addEventListener('load', function() {
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group identify setPersonProperties setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags resetGroups onFeatureFlags addFeatureFlagsHandler onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('phc_Ysj1O1gCHNOEiSl3AoysB7J6KBOvlHXT7OizPxPkZhr', {
+      api_host: 'https://us.i.posthog.com',
+      defaults: '2026-01-30'
+    });
+  });
+</script>
+
+</body>
+</html>
