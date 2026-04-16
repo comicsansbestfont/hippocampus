@@ -1,6 +1,6 @@
 {
   "name": "@sacheeperera/hippocampus",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Your agents forget between sessions. Hippocampus gives them a rolling briefing — synthesized daily, injected automatically.",
   "type": "module",
   "main": "index.ts",
