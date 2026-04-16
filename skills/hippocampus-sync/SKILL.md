@@ -1,6 +1,6 @@
 ---
-name: hippocampus-sync
-description: Daily synthesis of HIPPOCAMPUS.md — consolidate rolling context from memory files and configured sources into a structured working memory document loaded into every session.
+name: hippocampus
+description: Three-layer working memory for OpenClaw agents — daily notes → rolling synthesis → permanent knowledge. Plugin: github.com/comicsansbestfont/hippocampus
 ---
 
 # Hippocampus Sync
@@ -176,3 +176,11 @@ If material changes detected (new threads, resolved items, significant state shi
 
 ### Channel Summary (if cron-delivered)
 If this runs as a cron job with delivery, produce a 3-5 line summary of material changes only. If no material changes since last sync: reply with `NO_REPLY`.
+
+---
+
+## References
+
+- [The Markdown](https://www.sachee.com.au/the-markdown) — Writing about agents, memory, and the operating layer
+- [hippocampus.lovabo.com](https://hippocampus.lovabo.com) — Plugin homepage, docs, and gallery
+- [GitHub](https://github.com/comicsansbestfont/hippocampus) — Source code and full plugin (npm: `@sacheeperera/hippocampus`)
