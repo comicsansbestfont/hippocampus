@@ -14,7 +14,7 @@
 <meta name="twitter:title" content="Hippocampus | Agent memory plugin for OpenClaw">
 <meta name="twitter:description" content="Your AI agents forget between sessions. Hippocampus synthesizes a rolling briefing from daily notes and injects it automatically.">
 <meta name="twitter:image" content="https://hippocampus.lovabo.com/og-image.png">
-<link rel="canonical" href="https://hippocampus.lovabo.com">
+<link rel="canonical" href="https://hippocampus.lovabo.com/">
 
 <!-- Structured Data -->
 <script type="application/ld+json">
@@ -2061,6 +2061,13 @@ const revealObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
 document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ── Crawl-safety fallback: reveal all content for bots that execute JS but don't scroll ──
+setTimeout(() => {
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
+    el.classList.add('visible');
+  });
+}, 100);
 
 
 // ── Typing Effect for Install Command ──

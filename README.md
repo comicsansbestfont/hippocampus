@@ -1,5 +1,7 @@
 # Hippocampus
 
+[![Website](https://img.shields.io/badge/website-hippocampus.lovabo.com-blue)](https://hippocampus.lovabo.com/)
+
 ![Hippocampus — Your agents forget between sessions. This fixes that.](docs/gallery/01-hero.png)
 
 **Your agents forget between sessions. This fixes that.**
